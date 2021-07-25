@@ -3,11 +3,12 @@ import React from 'react'
 import { Container, Title } from './styles'
 
 interface HeaderProps {
-  title: string
+  title: string,
+  height: number
 }
 
-const Header: React.FC<HeaderProps> = ({ title }: HeaderProps) => (
-  <Container>
+const Header: React.FC<HeaderProps> = ({ title, ...rest }: HeaderProps) => (
+  <Container {...rest}>
     <Title>{title}</Title>
   </Container>
 )
