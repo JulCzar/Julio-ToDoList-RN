@@ -9,14 +9,18 @@ interface ButtonProps extends TouchableNativeFeedbackProps {
   icon?: string
 }
 
-const Button: React.FC<ButtonProps> = ({ children, ...rest }: ButtonProps) => (
-  <Container>
-    <TouchableNativeFeedback {...rest}>
-      <ButtonView>
-        <Text>{children}</Text>
-      </ButtonView>
-    </TouchableNativeFeedback>
-  </Container>
-)
+const Button: React.FC<ButtonProps> = (props: ButtonProps) => {
+  const { children, ...rest } = props
+  
+  return (
+    <Container>
+      <TouchableNativeFeedback {...rest}>
+        <ButtonView>
+          <Text>{children}</Text>
+        </ButtonView>
+      </TouchableNativeFeedback>
+    </Container>
+  )
+}
 
 export default Button

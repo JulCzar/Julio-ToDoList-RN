@@ -6,17 +6,15 @@ import { Extrapolate, interpolate } from 'react-native-reanimated'
 
 import { Header } from '../../components'
 import ListItem from '../../components/ListItem'
-import { vMin } from '../../constants/viewPortUnits'
+import { header } from '../../constants'
+import { fb } from '../../services'
 import _folders from './folders.json'
 import { Container, Content } from './styles'
 
-enum header {
-  EXPANDED = vMin(100),
-  COLLAPSED = 50
-}
+const { COLLAPSED, EXPANDED } = header
 
 const Folders: React.FC = () => {
-  const [headerHeight, setHeaderHeight] = useState(header.EXPANDED)
+  const [headerHeight, setHeaderHeight] = useState(EXPANDED)
   const [folders] = useState(_folders)
   const navigator = useNavigation()
 
@@ -25,7 +23,15 @@ const Folders: React.FC = () => {
   }, [])
   
   const loadToDos = useCallback(async () => {
-    console.log('Folders')
+    const folders = []
+
+    const folderSnapshot = await fb.collection('folders').get()
+
+    folderSnapshot.forEach(
+      doc => folders.push(
+        doc.data()
+      )
+    )
   }, [])
 
   const navigateTo = (screen: string, data?: any) => () => navigator.navigate(screen, data)
@@ -34,25 +40,25 @@ const Folders: React.FC = () => {
     
     setHeaderHeight(interpolate(
       nativeEvent.contentOffset.y,
-      [0, header.EXPANDED-header.COLLAPSED],
-      [header.EXPANDED, header.COLLAPSED],
+      [0, EXPANDED-COLLAPSED],
+      [EXPANDED, COLLAPSED],
       Extrapolate.CLAMP
     ))
   }
 
-  const contentContainerStyle = { paddingTop: header.EXPANDED }
+  const contentContainerStyle = { paddingTop: EXPANDED }
+  
   return (
     <Container>
       <Content>
         <Header title='Folders' height={headerHeight}/>
         <ScrollView
           onScroll={handleScroll}
-          scrollEventThrottle={16}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={contentContainerStyle}
         >
           {folders.map(folder => (
-            <ListItem key={folder.id} data={folder} onPress={navigateTo('ToDos')}/>
+            <ListItem key={folder.id} data={folder} onPress={navigateTo('ToDos', folder)}/>
           ))}
         </ScrollView>
       </Content>

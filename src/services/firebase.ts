@@ -1,3 +1,5 @@
+import 'firebase/storage'
+
 import firebase from 'firebase'
 
 import { secrets } from '../config'
@@ -13,4 +15,4 @@ const config = {
 
 firebase.initializeApp(config)
 
-export default firebase
+export default firebase.firestore()
