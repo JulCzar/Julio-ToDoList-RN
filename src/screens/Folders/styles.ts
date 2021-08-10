@@ -5,11 +5,12 @@ import { colors } from '../../constants'
 
 export const Container = styled(View)`
   flex: 1;
-  background: ${colors.backgroundNormal};
+  background: ${colors.backgroundDark};
   justify-content: flex-start;
 `
 
 export const Content = styled(View)`
+  background: ${colors.backgroundNormal};
   flex: 1;
 `
 

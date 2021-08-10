@@ -2,22 +2,20 @@ import React from 'react'
 import { TouchableNativeFeedback, TouchableNativeFeedbackProps, View } from 'react-native'
 
 import { Text } from '../../styles'
-import { Container } from './styles'
+import { Container, Content } from './styles'
 
 interface ListItemProps extends TouchableNativeFeedbackProps {
-  data: {
-    name: string
-  }
+  data: any
 }
 
 const ListItem: React.FC<ListItemProps> = ({ data, ...rest }: ListItemProps) => (
-  <View>
+  <Container>
     <TouchableNativeFeedback {...rest}>
-      <Container>
+      <Content>
         <Text>{data.name}</Text>
-      </Container>
+      </Content>
     </TouchableNativeFeedback>
-  </View>
+  </Container>
 )
 
 export default ListItem

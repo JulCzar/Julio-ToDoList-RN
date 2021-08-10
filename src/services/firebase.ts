@@ -1,4 +1,4 @@
-import 'firebase/storage'
+import 'firebase/firestore'
 
 import firebase from 'firebase'
 
