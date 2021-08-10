@@ -1,6 +1,12 @@
 import { useNavigation } from '@react-navigation/native'
 import React, { useCallback, useEffect, useState } from 'react'
-import { ScrollView } from 'react-native-gesture-handler'
+import Animated, {
+  Extrapolate,
+  interpolate,
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated'
 
 import { Header } from '../../components'
 import ListItem from '../../components/ListItem'
@@ -9,11 +15,12 @@ import { fb } from '../../services'
 import _folders from './folders.json'
 import { Container, Content } from './styles'
 
-const { EXPANDED } = header
+const { COLLAPSED, EXPANDED } = header
 
 const Folders: React.FC = () => {
   const [folders] = useState(_folders)
   const navigator = useNavigation()
+  const y = useSharedValue(0)
 
   useEffect(() => {
     loadToDos()
@@ -27,15 +34,32 @@ const Folders: React.FC = () => {
     folderSnapshot.forEach(doc => folders.push(doc.data()))
   }, [])
 
-  const navigateTo = (screen: string, ...rest: any[]) => () => navigator.navigate(screen, ...rest)
+  const animatedStyles = useAnimatedStyle(() => ({
+    height: interpolate(
+      y.value,
+      [0, EXPANDED - COLLAPSED],
+      [EXPANDED, COLLAPSED],
+      Extrapolate.CLAMP
+    ),
+  }))
+
+  const navigateTo =
+    (screen: string, ...data: unknown[]) => () => navigator.navigate(screen, data)
+
+  const handleScroll = useAnimatedScrollHandler({
+    onScroll({ contentOffset }) {
+      y.value = contentOffset.y
+    },
+  })
 
   return (
     <Container>
       <Content>
-        <Header title='Folders' height={EXPANDED} />
-        <ScrollView
-          scrollEventThrottle={16}
-          showsVerticalScrollIndicator={false}>
+        <Header title='Folders' style={[animatedStyles]} />
+        <Animated.ScrollView
+          onScroll={handleScroll}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingTop: EXPANDED }}>
           {folders.map(folder => (
             <ListItem
               key={folder.id}
@@ -43,7 +67,7 @@ const Folders: React.FC = () => {
               onPress={navigateTo('ToDos', folder)}
             />
           ))}
-        </ScrollView>
+        </Animated.ScrollView>
       </Content>
     </Container>
   )

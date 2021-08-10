@@ -1,8 +1,9 @@
 import React from 'react'
+import { ViewProps } from 'react-native'
 
 import { Container, Title } from './styles'
 
-interface HeaderProps {
+interface HeaderProps extends ViewProps {
   title: string,
   height?: number
 }

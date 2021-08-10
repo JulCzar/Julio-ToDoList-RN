@@ -11,13 +11,14 @@ interface ContainerProps {
 
 export const Container = styled(Animated.View)<ContainerProps>`
   align-items: center;
-  background: ${props => (props.height===header.COLLAPSED?colors.backgroundDark:'transparent')};
+  background: ${colors.backgroundDark};
   min-height: ${header.COLLAPSED}px;
   justify-content: center;
   left: 0;
   position: absolute;
   top: 0;
   width: ${vMin(100)}px;
+  z-index:9999;
 `
 
 export const Title = styled(Text)`

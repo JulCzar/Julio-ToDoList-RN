@@ -11,7 +11,7 @@ const Routes: React.FC = () => (
   <NavigationContainer>
     <Navigator headerMode='none' screenOptions={screenOptions}>
       <Screen name='Folders' component={screen.Folders} />
-      {/* <Screen name='ToDos' component={screen.ToDos} /> */}
+      <Screen name='ToDos' component={screen.ToDos} />
     </Navigator>
   </NavigationContainer>
 )

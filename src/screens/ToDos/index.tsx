@@ -1,56 +1,69 @@
-import { useRoute } from '@react-navigation/native'
+import { RouteProp, useRoute } from '@react-navigation/native'
 import React, { useCallback, useEffect, useState } from 'react'
-import { NativeScrollEvent, NativeSyntheticEvent } from 'react-native'
-import { ScrollView } from 'react-native-gesture-handler'
-import { Extrapolate, interpolate } from 'react-native-reanimated'
+import Animated, {
+  Extrapolate,
+  interpolate,
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated'
 
 import { Header } from '../../components'
 import ListItem from '../../components/ListItem'
 import { header } from '../../constants'
+import { RootStackParamList } from '../../models'
 import { Container, Content } from './styles'
 import _todos from './todos.json'
 
+type ProfileScreenRouteProp = RouteProp<RootStackParamList, 'ToDos'>
+
+const { COLLAPSED, EXPANDED } = header
+
 const Todos: React.FC = () => {
-  const [headerHeight, setHeaderHeight] = useState(header.EXPANDED)
+  const height = useSharedValue(0)
   const [todos] = useState(_todos)
-  const { params } = useRoute()
+  const { params } = useRoute<ProfileScreenRouteProp>()
+  const [folder] = params
 
   useEffect(() => {
     loadToDos()
   }, [])
-  
+
   const loadToDos = useCallback(async () => {
     console.log({ params })
     console.log('To Dos')
   }, [])
 
-  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const { nativeEvent } = event
-    
-    setHeaderHeight(interpolate(
-      nativeEvent.contentOffset.y,
-      [0, header.EXPANDED-header.COLLAPSED],
-      [header.EXPANDED, header.COLLAPSED],
+  const animatedStyles = useAnimatedStyle(() => ({
+    height: interpolate(
+      height.value,
+      [0, EXPANDED - COLLAPSED],
+      [EXPANDED, COLLAPSED],
       Extrapolate.CLAMP
-    ))
-  }
+    ),
+  }))
+
+  const handleScroll = useAnimatedScrollHandler({
+    onScroll({ contentOffset }) {
+      height.value = contentOffset.y
+    },
+  })
 
   const contentContainerStyle = { paddingTop: header.EXPANDED }
 
   return (
     <Container>
       <Content>
-        <Header title={params.name} height={headerHeight}/>
-        <ScrollView
+        <Header title={folder.name} style={[animatedStyles]} />
+        <Animated.ScrollView
           onScroll={handleScroll}
           scrollEventThrottle={16}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={contentContainerStyle}
-        >
+          contentContainerStyle={contentContainerStyle}>
           {todos.map(todo => (
-            <ListItem key={todo.id} data={todo}/>
+            <ListItem key={todo.id} data={todo} />
           ))}
-        </ScrollView>
+        </Animated.ScrollView>
       </Content>
     </Container>
   )
